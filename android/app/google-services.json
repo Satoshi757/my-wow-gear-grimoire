@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "38394612690",
+    "project_id": "my-wow-gear-grimoire",
+    "storage_bucket": "my-wow-gear-grimoire.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:38394612690:android:bd472f600cddce9ffe560b",
+        "android_client_info": {
+          "package_name": "com.example.my_wow_gear_grimoire"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "38394612690-c6kj93bb9u1r05kl96mrhs7gefvmmgho.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAs8EniCQ4Qd_c0FLUFYekOTFt6Xl6qhY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "38394612690-c6kj93bb9u1r05kl96mrhs7gefvmmgho.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
