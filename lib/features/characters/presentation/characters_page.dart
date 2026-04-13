@@ -1,44 +1,75 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-/// Placeholder para Fase 1. Solo verifica que el usuario autenticado llega aquí.
-class CharactersPage extends StatelessWidget {
+import '../../../core/constants/route_names.dart';
+import '../../../shared/widgets/character_card.dart';
+import '../../../shared/widgets/empty_state.dart';
+import 'providers/characters_providers.dart';
+
+class CharactersPage extends ConsumerWidget {
   const CharactersPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final charactersAsync = ref.watch(charactersStreamProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mis personajes'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Cerrar sesión',
-            onPressed: () => FirebaseAuth.instance.signOut(),
-          ),
-        ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.construction, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              'Fase 1 — Próximamente',
-              style: Theme.of(context).textTheme.titleMedium,
+      body: charactersAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(height: 16),
+                const Text('Error al cargar personajes'),
+                const SizedBox(height: 8),
+                FilledButton(
+                  onPressed: () => ref.invalidate(charactersStreamProvider),
+                  child: const Text('Reintentar'),
+                ),
+              ],
             ),
-            if (user != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                'Sesión activa: ${user.displayName ?? user.email}',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-          ],
+          ),
         ),
+        data: (characters) {
+          if (characters.isEmpty) {
+            return EmptyState(
+              icon: Icons.person_add_outlined,
+              title: 'Sin personajes',
+              message: 'Crea tu primer personaje para empezar a registrar objetivos.',
+              actionLabel: 'Crear personaje',
+              onAction: () => context.go(RouteNames.characterNew),
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            itemCount: characters.length,
+            itemBuilder: (context, index) {
+              final character = characters[index];
+              return CharacterCard(
+                character: character,
+                onTap: () => context.go(RouteNames.characterEdit(character.id)),
+                onEdit: () => context.go(RouteNames.characterEdit(character.id)),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.go(RouteNames.characterNew),
+        tooltip: 'Nuevo personaje',
+        child: const Icon(Icons.add),
       ),
     );
   }
