@@ -227,7 +227,7 @@ class _CharacterFormPageState extends ConsumerState<CharacterFormPage> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 // ValueKey fuerza recreación cuando el valor cambia (initialValue solo aplica en initState).
-                key: ValueKey(_selectedClass),
+                key: ValueKey('class_$_selectedClass'),
                 initialValue: _selectedClass,
                 decoration: const InputDecoration(
                   labelText: 'Clase *',
@@ -246,7 +246,7 @@ class _CharacterFormPageState extends ConsumerState<CharacterFormPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                key: ValueKey(_selectedRace),
+                key: ValueKey('race_$_selectedRace'),
                 initialValue: _selectedRace,
                 decoration: const InputDecoration(
                   labelText: 'Raza *',
