@@ -17,6 +17,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(notifier.dispose);
 
   return GoRouter(
+    initialLocation: RouteNames.login,
     refreshListenable: notifier,
     redirect: (context, state) {
       final isLoggedIn = FirebaseAuth.instance.currentUser != null;
