@@ -1,3 +1,8 @@
+#CLAUDE
+.claude/
+macos/
+windows/
+
 # Miscellaneous
 *.class
 *.log
