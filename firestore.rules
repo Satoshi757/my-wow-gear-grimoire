@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── users ──────────────────────────────────────────────────────────────
+    // Cada usuario solo accede a su propio documento.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── characters ─────────────────────────────────────────────────────────
+    match /characters/{characterId} {
+      allow read: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid;
+
+      allow create: if request.auth != null
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.classKey is string
+        && request.resource.data.classKey.size() > 0
+        && request.resource.data.raceKey is string
+        && request.resource.data.raceKey.size() > 0
+        && request.resource.data.mainSpec is string
+        && request.resource.data.mainSpec.size() > 0;
+
+      allow update: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid
+        // ownerUid es inmutable después de la creación
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0;
+
+      // Borrado deshabilitado en MVP. Se usa isArchived = true.
+      allow delete: if false;
+    }
+
+    // ── goals ──────────────────────────────────────────────────────────────
+    match /goals/{goalId} {
+      allow read: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid;
+
+      allow create: if request.auth != null
+        && request.resource.data.ownerUid == request.auth.uid
+        && _validGoalFields(request.resource.data)
+        // RB-09: characterId debe apuntar a un personaje del mismo ownerUid
+        && exists(/databases/$(database)/documents/characters/$(request.resource.data.characterId))
+        && get(/databases/$(database)/documents/characters/$(request.resource.data.characterId)).data.ownerUid == request.auth.uid;
+
+      allow update: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid
+        // ownerUid y characterId son inmutables después de la creación
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.characterId == resource.data.characterId
+        && _validGoalFields(request.resource.data);
+
+      // Borrado deshabilitado en MVP. Se usa isArchived = true.
+      allow delete: if false;
+    }
+
+    // ── itemSearchCache ────────────────────────────────────────────────────
+    // Solo accesible desde Cloud Functions con Admin SDK (que bypasea las reglas).
+    match /itemSearchCache/{docId} {
+      allow read, write: if false;
+    }
+
+    // ── Función auxiliar: valida campos obligatorios y catálogos de goal ───
+    function _validGoalFields(data) {
+      return data.name is string
+        && data.name.size() > 0
+        && data.type in ['gear', 'enchant', 'gem', 'material', 'special_item', 'free_note']
+        && data.status in ['pending', 'in_progress', 'obtained']
+        && data.priority in ['high', 'medium', 'low', 'nice_to_have'];
+    }
+  }
+}

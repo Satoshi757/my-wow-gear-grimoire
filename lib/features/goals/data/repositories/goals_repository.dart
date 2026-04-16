@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/catalogs/goal_priorities.dart';
+import '../../../../core/catalogs/goal_statuses.dart';
+import '../../../../core/catalogs/goal_types.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/models/goal.dart';
@@ -7,7 +10,8 @@ import '../dtos/goal_dto.dart';
 import '../mappers/goal_mapper.dart';
 
 class GoalsRepository {
-  GoalsRepository() : _firestore = FirebaseFirestore.instance;
+  GoalsRepository({FirebaseFirestore? firestore})
+      : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
 
@@ -62,8 +66,9 @@ class GoalsRepository {
   }
 
   /// Crea o actualiza un objetivo.
-  /// Valida que [goal.characterId] pertenezca al mismo [goal.ownerUid] antes de escribir.
+  /// Valida campos, catálogos y RB-09 antes de escribir.
   Future<String> save(Goal goal) async {
+    _validate(goal);
     // RB-09: characterId debe apuntar a un personaje del mismo ownerUid.
     await _validateCharacterOwnership(goal.characterId, goal.ownerUid);
 
@@ -90,6 +95,29 @@ class GoalsRepository {
         name: 'GoalsRepository',
       );
       throw const FirestoreError('Error al guardar el objetivo');
+    }
+  }
+
+  /// Valida campos obligatorios y valores de catálogo.
+  /// Lanza [ValidationError] si alguno es inválido.
+  void _validate(Goal goal) {
+    if (goal.ownerUid.isEmpty) {
+      throw const ValidationError('ownerUid es obligatorio');
+    }
+    if (goal.characterId.isEmpty) {
+      throw const ValidationError('characterId es obligatorio');
+    }
+    if (goal.name.trim().isEmpty) {
+      throw const ValidationError('El nombre del objetivo es obligatorio');
+    }
+    if (!goalTypes.contains(goal.type)) {
+      throw ValidationError('type inválido: ${goal.type}');
+    }
+    if (!goalStatuses.contains(goal.status)) {
+      throw ValidationError('status inválido: ${goal.status}');
+    }
+    if (!goalPriorities.contains(goal.priority)) {
+      throw ValidationError('priority inválido: ${goal.priority}');
     }
   }
 
