@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/constants/route_names.dart';
 import '../features/auth/presentation/login_page.dart';
+import '../features/characters/presentation/character_form_page.dart';
 import '../features/characters/presentation/characters_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -16,6 +17,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(notifier.dispose);
 
   return GoRouter(
+    initialLocation: RouteNames.login,
     refreshListenable: notifier,
     redirect: (context, state) {
       final isLoggedIn = FirebaseAuth.instance.currentUser != null;
@@ -35,6 +37,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RouteNames.characters,
         name: RouteNames.characters,
         builder: (context, state) => const CharactersPage(),
+      ),
+      GoRoute(
+        path: RouteNames.characterNew,
+        builder: (context, state) => const CharacterFormPage(),
+      ),
+      GoRoute(
+        path: '/characters/:id/edit',
+        builder: (context, state) => CharacterFormPage(
+          characterId: state.pathParameters['id'],
+        ),
       ),
     ],
   );
