@@ -49,7 +49,7 @@ class CharactersPage extends ConsumerWidget {
               title: 'Sin personajes',
               message: 'Crea tu primer personaje para empezar a registrar objetivos.',
               actionLabel: 'Crear personaje',
-              onAction: () => context.go(RouteNames.characterNew),
+              onAction: () => context.push(RouteNames.characterNew),
             );
           }
           return ListView.builder(
@@ -59,15 +59,19 @@ class CharactersPage extends ConsumerWidget {
               final character = characters[index];
               return CharacterCard(
                 character: character,
-                onTap: () => context.go(RouteNames.characterEdit(character.id)),
-                onEdit: () => context.go(RouteNames.characterEdit(character.id)),
+                onTap: () => context.push(
+                  RouteNames.characterDashboard(character.id),
+                ),
+                onEdit: () => context.push(
+                  RouteNames.characterEdit(character.id),
+                ),
               );
             },
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go(RouteNames.characterNew),
+        onPressed: () => context.push(RouteNames.characterNew),
         tooltip: 'Nuevo personaje',
         child: const Icon(Icons.add),
       ),
