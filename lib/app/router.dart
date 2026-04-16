@@ -7,8 +7,11 @@ import 'package:go_router/go_router.dart';
 
 import '../core/constants/route_names.dart';
 import '../features/auth/presentation/login_page.dart';
+import '../features/characters/presentation/character_dashboard_page.dart';
 import '../features/characters/presentation/character_form_page.dart';
 import '../features/characters/presentation/characters_page.dart';
+import '../features/goals/presentation/goal_detail_page.dart';
+import '../features/goals/presentation/goal_form_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _AuthChangeNotifier(
@@ -46,6 +49,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/characters/:id/edit',
         builder: (context, state) => CharacterFormPage(
           characterId: state.pathParameters['id'],
+        ),
+      ),
+      GoRoute(
+        path: '/characters/:id/goals/new',
+        builder: (context, state) => GoalFormPage(
+          characterId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: '/characters/:id/goals/:goalId',
+        builder: (context, state) => GoalDetailPage(
+          characterId: state.pathParameters['id']!,
+          goalId: state.pathParameters['goalId']!,
+        ),
+      ),
+      GoRoute(
+        path: '/characters/:id',
+        builder: (context, state) => CharacterDashboardPage(
+          characterId: state.pathParameters['id']!,
         ),
       ),
     ],

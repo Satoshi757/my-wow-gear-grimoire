@@ -19,3 +19,12 @@ Stream<List<Character>> charactersStream(CharactersStreamRef ref) {
   if (uid == null) return const Stream.empty();
   return ref.watch(charactersRepositoryProvider).watchAll(uid);
 }
+
+/// Carga puntual de un personaje por ID. Devuelve null si no existe.
+@riverpod
+Future<Character?> characterDetail(
+  CharacterDetailRef ref,
+  String characterId,
+) {
+  return ref.watch(charactersRepositoryProvider).fetchById(characterId);
+}
