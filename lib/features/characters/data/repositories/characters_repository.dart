@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../../core/catalogs/wow_classes.dart';
+import '../../../../core/catalogs/wow_races.dart';
 import '../../../../core/errors/app_error.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/models/character.dart';
@@ -7,7 +9,8 @@ import '../dtos/character_dto.dart';
 import '../mappers/character_mapper.dart';
 
 class CharactersRepository {
-  CharactersRepository() : _firestore = FirebaseFirestore.instance;
+  CharactersRepository({FirebaseFirestore? firestore})
+      : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
 
@@ -61,6 +64,7 @@ class CharactersRepository {
   /// Si [character.id] está vacío, crea y devuelve el ID generado.
   /// Si tiene ID, actualiza y devuelve el mismo ID.
   Future<String> save(Character character) async {
+    _validate(character);
     try {
       final now = DateTime.now();
       if (character.id.isEmpty) {
@@ -84,6 +88,26 @@ class CharactersRepository {
         name: 'CharactersRepository',
       );
       throw const FirestoreError('Error al guardar el personaje');
+    }
+  }
+
+  /// Valida los campos obligatorios y catálogos antes de escribir.
+  /// Lanza [ValidationError] si alguno es inválido.
+  void _validate(Character character) {
+    if (character.ownerUid.isEmpty) {
+      throw const ValidationError('ownerUid es obligatorio');
+    }
+    if (character.name.trim().isEmpty) {
+      throw const ValidationError('El nombre del personaje es obligatorio');
+    }
+    if (!wowClasses.contains(character.classKey)) {
+      throw ValidationError('classKey inválido: ${character.classKey}');
+    }
+    if (!wowRaces.contains(character.raceKey)) {
+      throw ValidationError('raceKey inválido: ${character.raceKey}');
+    }
+    if (character.mainSpec.trim().isEmpty) {
+      throw const ValidationError('La especialización principal es obligatoria');
     }
   }
 }

@@ -1,1 +1,26 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"my-wow-gear-grimoire","appId":"1:38394612690:android:bd472f600cddce9ffe560b","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"my-wow-gear-grimoire","configurations":{"android":"1:38394612690:android:bd472f600cddce9ffe560b","ios":"1:38394612690:ios:96acd4a9505f3893fe560b"}}}}}}
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "my-wow-gear-grimoire",
+          "appId": "1:38394612690:android:bd472f600cddce9ffe560b",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "my-wow-gear-grimoire",
+          "configurations": {
+            "android": "1:38394612690:android:bd472f600cddce9ffe560b",
+            "ios": "1:38394612690:ios:96acd4a9505f3893fe560b"
+          }
+        }
+      }
+    }
+  }
+}
